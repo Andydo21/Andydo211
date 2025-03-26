@@ -38,7 +38,6 @@ movie-web/
 ## Tính năng
 
 - Navbar trong suốt với menu điều hướng
-- Hero section với gradient overlay
 - Slider phim tự động chạy
 - Hiệu ứng hover cho poster phim
 - Responsive design
