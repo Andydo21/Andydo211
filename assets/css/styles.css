@@ -11,18 +11,22 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   position: relative;
+  padding-bottom: 280px;
 }
 
 .section-one .content {
   padding: 80px 0;
   margin-left: 0px;
   max-width: 600px;
+  position: relative;
+  z-index: 2;
 }
 
 .section-one .container {
   padding-left: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .section-one h1 {
@@ -56,9 +60,10 @@ body {
   width: 100%;
   padding: 15px 0;
   position: absolute;
-  bottom: 40px;
+  bottom: 0;
   left: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.4));
+  z-index: 1;
 }
 
 .swiper {
