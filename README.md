@@ -2,13 +2,6 @@
 
 Trang web xem phim với giao diện hiện đại, sử dụng Bootstrap và Swiper.js.
 
-## Cài đặt
-
-1. Clone repository này về máy của bạn
-2. Tạo thư mục `assets/images/` và thêm các hình ảnh sau:
-   - `venom-bg.jpg` - Hình nền cho section-one
-   - `movie1.jpg` đến `movie6.jpg` - Hình ảnh cho slider phim
-
 ## Cấu trúc thư mục
 
 ```
