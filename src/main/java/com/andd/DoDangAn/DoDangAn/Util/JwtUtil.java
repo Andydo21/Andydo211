@@ -1,46 +1,59 @@
 package com.andd.DoDangAn.DoDangAn.Util;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.JWTVerifier;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "your-256-bit-secret-your-256-bit-secret";
-    private final long EXPIRATION_TIME = 86400000; // 1 ngày
 
-    public String generateToken(String username, String role) {
-        return JWT.create()
-                .withSubject(username)
-                .withClaim("role", role)
-                .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .sign(Algorithm.HMAC256(SECRET_KEY));
+    private final String SECRET_KEY = "your-256-bit-secret-your-256-bit-secret";  // Thay bằng khóa bảo mật thực tế
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 giờ
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String extractUsername(String token) {
-        return decodeToken(token).getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
 
-    public String extractRole(String token) {
-        return decodeToken(token).getClaim("role").asString();
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
-    public boolean validateToken(String token) {
-        try {
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET_KEY)).build();
-            verifier.verify(token);
-            return true;
-        } catch (JWTVerificationException e) {
-            return false;
-        }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    private DecodedJWT decodeToken(String token) {
-        return JWT.require(Algorithm.HMAC256(SECRET_KEY)).build().verify(token);
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 }

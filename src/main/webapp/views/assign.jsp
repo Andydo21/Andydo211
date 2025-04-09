@@ -20,7 +20,6 @@
     <form:errors path="productName" cssClass="error"/>
     <form:input type="number" value="${product.getPrice()}" placeholder="enter product price" path="price"/><br><br>
     <form:errors path="price" cssClass="error"/>
-    <form:input type="text" value="${product.getDescription()}" placeholder="enter product description" path="description"/><br><br>
     <form:errors path="description" cssClass="error"/>
 
     <form:select path="categoryID">

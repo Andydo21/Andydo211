@@ -33,10 +33,11 @@ public class Product {
     private String imageUrl = "/uploads/default.png";
     @NotNull(message = "Video không được trống")
     private String videoUrl;
+    private String episode;
     public Product() {
     }
 
-    public Product(String id, String categoryID,String productName, int price, String description,String imageUrl,String videoUrl) {
+    public Product(String id, String categoryID,String productName, int price, String description,String imageUrl,String videoUrl,String episode) {
         this.id = id;
         this.categoryID = categoryID;
         this.price = price;
@@ -44,6 +45,15 @@ public class Product {
         this.description = description;
         this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
+        this.episode = episode;
+    }
+
+    public String getEpisode() {
+        return episode;
+    }
+
+    public void setEpisode(String episode) {
+        this.episode = episode;
     }
 
     public String getImageUrl() {

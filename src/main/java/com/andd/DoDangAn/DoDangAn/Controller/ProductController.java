@@ -72,7 +72,7 @@ public class ProductController {
             return "login";
         }
         else {
-            User foundUser = userRepository.findByUsername(user.getUserName());
+            Optional<User> foundUser = userRepository.findByUsername(user.getUserName());
             if (foundUser != null) {
                 return "redirect:/categories";
             }
@@ -91,7 +91,7 @@ public class ProductController {
             return "login";
         }
         else {
-            User foundUser = userRepository.findByUsername(user.getUserName());
+            Optional<User> foundUser = userRepository.findByUsername(user.getUserName());
             if (foundUser != null) {
                 return "redirect:/movie/"+ProductID;
             }

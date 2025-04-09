@@ -17,6 +17,7 @@
 
 <form:form method="POST" action="/Products/insertProduct" modelAttribute="product" enctype="multipart/form-data">
     <form:input type="text" placeholder="enter product name" path="productName"/><br><br>
+
     <form:errors path="productName" cssClass="error"/>
     <form:input type="number" placeholder="enter product price" path="price"/><br><br>
     <form:errors path="price" cssClass="error"/>

@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -32,6 +33,15 @@ public class AdminController {
     @RequestMapping(value="/movie/{productID}",method= RequestMethod.GET)
     public String showMovie(@PathVariable("productID") String productID, ModelMap modelMap) {
         modelMap.addAttribute("productID", productID);
+        try {
+            if (productRepository.findById(productID).isPresent()){
+                Product foundProduct = productRepository.findById(productID).get();
+                foundProduct.setPrice(foundProduct.getPrice()+1);
+                productRepository.save(foundProduct);
+            }
+        } catch (Exception e) {
+            return "MovieVip";
+        }
         return "MovieVIP";
     }
     @RequestMapping(value = "/changeCategory/{productID}",method=RequestMethod.GET)
@@ -85,6 +95,26 @@ public class AdminController {
             else {
                 product.setImageUrl("/uploads/default.png");
             }
+            try{
+
+                if(product.getEpisode()!=null){
+                    if(Double.parseDouble(product.getEpisode())<0){
+                        modelMap.addAttribute("error","Episode must be a positive number");
+                        return "insertProduct";
+                    }
+                    if(productRepository.findByProductName(product.getProductName())!=null){
+                        if(productRepository.existsByEpisode(product.getEpisode())){
+                            modelMap.addAttribute("error", "Episode already exists");
+                            return "insertProduct";
+                        }
+                    }
+                }
+                else product.setEpisode("Movie");
+            }catch (NumberFormatException e){
+                modelMap.addAttribute("error", "Invalid Episode");
+                return "insertProduct";
+            }
+            product.setPrice(0);
             product.setId(UUID.randomUUID().toString());
             productRepository.save(product);
             return "redirect:/categories";
@@ -123,6 +153,9 @@ public class AdminController {
                 }
                 if (!product.getVideoUrl().isEmpty()){
                     foundProduct.setVideoUrl(product.getVideoUrl());
+                }
+                if (!product.getEpisode().isEmpty()){
+                    foundProduct.setEpisode(product.getEpisode());
                 }
                 productRepository.save(foundProduct);
             }

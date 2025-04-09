@@ -5,4 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ProductRepository extends CrudRepository<Product, String> {
     Iterable<Product> findByCategoryID(String categoryID);
+    Product findByProductName(String productName);
+    boolean existsByEpisode(String episode);
 }
