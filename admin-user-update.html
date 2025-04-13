@@ -37,7 +37,7 @@
                 </a>
                 <div class="collapse show" id="userMenu">
                     <a class="nav-link submenu" href="admin-user.html">Danh sách user</a>
-                    <a class="nav-link submenu" href="admin-user-update.html">Tạo user</a>
+                    <a class="nav-link submenu active" href="admin-user-update.html">Tạo user</a>
                 </div>
                 <a href="#"><i class="bi bi-globe"></i> Thể loại & Quốc gia</a>
             </nav>
@@ -65,6 +65,10 @@
                                 <input type="password" class="form-control" id="password" />
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="phone" class="form-control" id="phone" />
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Quyền</label>
                                 <select class="form-select" id="role">
                                     <option value="USER">USER</option>
@@ -89,8 +93,8 @@
                 .then(user => {
                     document.getElementById("username").value = user.fullName;
                     document.getElementById("email").value = user.userName;
+                    document.getElementById("phone").value = user.phone;
                     document.getElementById("role").value = user.role;
-                    // Nếu backend hỗ trợ, cũng có thể pre-fill mật khẩu hoặc bỏ phần này
                 });
         }
 
@@ -99,6 +103,7 @@
                 fullName: document.getElementById("username").value,
                 userName: document.getElementById("email").value,
                 password: document.getElementById("password").value,
+                phone: document.getElementById("phone").value,
                 role: document.getElementById("role").value,
             };
 

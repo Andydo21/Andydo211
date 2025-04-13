@@ -26,7 +26,7 @@
                     <i class="fas fa-chevron-down nav-toggle-icon"></i>
                 </a>
                 <div class="collapse show" id="movieMenu">
-                    <a class="nav-link submenu" href="admin-movie.html">Danh sách phim</a>
+                    <a class="nav-link submenu active" href="admin-movie.html">Danh sách phim</a>
                     <a class="nav-link submenu" href="admin-movie-add.html">Thêm phim</a>
                     <a class="nav-link submenu" href="admin-movie-update.html">Sửa phim</a>
                 </div>
@@ -55,48 +55,66 @@
                             <th>Poster</th>
                             <th>Tên phim</th>
                             <th>Thể loại</th>
-                            <th>Giá</th>
+                            <th>Năm</th>
                             <th>Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td><img src="https://via.placeholder.com/60x80" alt="poster" class="img-thumbnail" /></td>
-                            <td>Phim Hành Động</td>
-                            <td>Hành Động</td>
-                            <td>50.000đ</td>
-                            <td>
-                                <a href="admin-movie-update.html?id=${movie.id}" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-sm btn-danger" onclick="deleteMovie('${movie.id}')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Thêm dòng phim khác nếu cần -->
+                    <tbody id="movie-table-body">
+
                     </tbody>
                 </table>
             </main>
         </div>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadMovies();
+        });
+
+        function loadMovies() {
+            fetch("http://localhost:8080/api/products")
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById("movie-table-body");
+                    tbody.innerHTML = "";
+
+                    data.forEach((movie, index) => {
+                        tbody.innerHTML += `
+              <tr>
+                <td>${index + 1}</td>
+                <td><img src="${movie.imageUrl}" width="60" class="img-thumbnail" /></td>
+                <td>${movie.productName}</td>
+                <td>${movie.categoryID}</td>
+                <td>${movie.price}đ</td>
+                <td>
+                  <a href="admin-movie-update.html?id=${movie.id}" class="btn btn-sm btn-warning">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button class="btn btn-sm btn-danger" onclick="deleteMovie(${movie.id})">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            `;
+                    });
+                });
+        }
+
         function deleteMovie(id) {
-            if (confirm("Bạn có chắc chắn muốn xóa phim này?")) {
+            if (confirm("Bạn có chắc chắn muốn xóa phim này không?")) {
                 fetch(`http://localhost:8080/api/products/${id}`, {
                     method: "DELETE"
                 })
                     .then(res => {
                         if (res.ok) {
                             alert("Xóa phim thành công!");
-                            location.reload(); // Reload lại danh sách
+                            loadMovies();
                         } else {
                             alert("Xóa thất bại!");
                         }
                     })
                     .catch(err => {
-                        console.error("Lỗi khi xóa:", err);
+                        console.error("Lỗi:", err);
                         alert("Lỗi kết nối đến server!");
                     });
             }

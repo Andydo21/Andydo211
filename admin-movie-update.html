@@ -79,8 +79,8 @@
                                 <input type="text" class="form-control" id="episode" />
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Giá (VNĐ)</label>
-                                <input type="number" class="form-control" id="price" />
+                                <label class="form-label">Năm</label>
+                                <input type="number" class="form-control" id="year" />
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Mô tả</label>
@@ -88,12 +88,13 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Ảnh poster</label>
-                                <input type="text" class="form-control" id="imageUrl" />
+                                <input type="file" class="form-control" id="imageFile" accept="image/*" />
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label">Link video</label>
-                                <input type="text" class="form-control" id="videoUrl" />
+                                <label class="form-label">Video phim</label>
+                                <input type="file" class="form-control" id="videoFile" accept="video/*" />
                             </div>
+
                         </form>
                     </div>
 
@@ -141,7 +142,7 @@
                     document.getElementById("productName").value = data.productName;
                     document.getElementById("categoryID").value = data.categoryID;
                     document.getElementById("episode").value = data.episode;
-                    document.getElementById("price").value = data.price;
+                    document.getElementById("year").value = data.year;
                     document.getElementById("description").value = data.description;
                     document.getElementById("imageUrl").value = data.imageUrl;
                     document.getElementById("videoUrl").value = data.videoUrl;
@@ -152,20 +153,21 @@
         }
 
         function updateMovie() {
-            const payload = {
-                productName: document.getElementById("productName").value,
-                categoryID: document.getElementById("categoryID").value,
-                episode: document.getElementById("episode").value,
-                price: parseFloat(document.getElementById("price").value),
-                description: document.getElementById("description").value,
-                imageUrl: document.getElementById("imageUrl").value,
-                videoUrl: document.getElementById("videoUrl").value
-            };
+            const formData = new FormData();
+            formData.append("productName", document.getElementById("productName").value);
+            formData.append("categoryID", document.getElementById("categoryID").value);
+            formData.append("episode", document.getElementById("episode").value);
+            formData.append("year", parseFloat(document.getElementById("year").value));
+            formData.append("description", document.getElementById("description").value);
+
+            const image = document.getElementById("imageFile").files[0];
+            const video = document.getElementById("videoFile").files[0];
+            if (image) formData.append("imageFile", image);
+            if (video) formData.append("videoFile", video);
 
             fetch(`http://localhost:8080/api/products/${movieId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: formData
             })
                 .then(res => {
                     if (res.ok) {
@@ -176,6 +178,7 @@
                     }
                 });
         }
+
 
         function loadVideos(id) {
             fetch(`http://localhost:8080/api/videos/product/${id}`)
