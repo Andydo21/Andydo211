@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phim - NEW MOVIE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" th:href="@{/assets/css/reset.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/base.css}" />
+  <link rel="stylesheet" th:href="@{/assets/css/movie.css}" />
+</head>
+<body>
+<!-- Header/Navbar -->
+<header class="navbar navbar-expand-lg navbar-dark fixed-top">
+  <div class="container-fluid px-5">
+    <a class="navbar-brand fw-bold text-warning" th:href="@{/home}">
+      NEW <span class="text-white">MOVIE</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav main-nav">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/home}">Trang chủ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" th:href="@{/movies}">Phim</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/categories}">Thể Loại</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/mylist}">Danh sách của tôi</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/search}"><i class="fas fa-search"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/notifications}"><i class="fas fa-bell"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/login}"><i class="fas fa-user"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- Movie Filter Section -->
+<section class="movie-filter">
+  <div class="filter-row">
+    <form th:action="@{/movies}" method="get" th:object="${filter}">
+      <select name="sort" class="filter-select" th:field="*{sort}">
+        <option value="">Sắp xếp</option>
+        <option value="newest">Mới nhất</option>
+        <option value="popular">Phổ biến nhất</option>
+        <option value="rating">Đánh giá cao</option>
+      </select>
+
+      <select name="format" class="filter-select" th:field="*{format}">
+        <option value="">Định dạng</option>
+        <option value="movie">Phim lẻ</option>
+        <option value="series">Phim bộ</option>
+        <option value="anime">Hoạt hình</option>
+      </select>
+
+      <select name="country" class="filter-select" th:field="*{country}">
+        <option value="">Quốc gia</option>
+        <option value="us">Âu - Mỹ</option>
+        <option value="korea">Hàn Quốc</option>
+        <option value="china">Trung Quốc</option>
+        <option value="japan">Nhật Bản</option>
+        <option value="vietnam">Việt Nam</option>
+      </select>
+
+      <select name="year" class="filter-select" th:field="*{year}">
+        <option value="">Năm</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+      </select>
+
+      <button type="submit" class="filter-button">Lọc phim</button>
+    </form>
+  </div>
+</section>
+
+<!-- Movie List Section -->
+<section class="movie-list">
+  <h2>Danh sách phim</h2>
+  <div class="movie-grid">
+    <div th:each="movie : ${movies}" class="movie-card">
+      <a th:href="@{/movie/detail/{id}(id=${movie.id})}" class="text-decoration-none">
+        <div class="movie-poster">
+          <img th:src="${movie.imageUrl}" th:alt="${movie.productName}" />
+          <div class="movie-overlay">
+            <div class="movie-info">
+              <h3 class="movie-title" th:text="${movie.productName}"></h3>
+              <div class="movie-genre" th:text="${movie.category != null ? movie.category.name : 'Không xác định'}"></div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Phân trang -->
+  <div class="pagination-container mt-4" th:if="${totalPages > 1}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+        <a class="page-link" th:href="@{/movies(page=${currentPage - 1}, sort=${filter.sort}, format=${filter.format}, country=${filter.country}, year=${filter.year})}">Trước</a>
+      </li>
+      <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:classappend="${pageNumber == currentPage} ? 'active'">
+        <a class="page-link" th:href="@{/movies(page=${pageNumber}, sort=${filter.sort}, format=${filter.format}, country=${filter.country}, year=${filter.year})}" th:text="${pageNumber}"></a>
+      </li>
+      <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+        <a class="page-link" th:href="@{/movies(page=${currentPage + 1}, sort=${filter.sort}, format=${filter.format}, country=${filter.country}, year=${filter.year})}">Sau</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-3 col-md-12 mb-4">
+        <a class="footer-brand" th:href="@{/home}"> NEW <span>MOVIE</span> </a>
+        <p class="location">
+          <i class="fas fa-map-marker-alt"></i>
+          Movie Web Việt Nam
+        </p>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-6 mb-4">
+        <h5>KHÁM PHÁ</h5>
+        <ul class="footer-links">
+          <li><a th:href="@{#}">Trung tâm hỗ trợ</a></li>
+          <li><a th:href="@{#}">Tài khoản</a></li>
+          <li><a th:href="@{#}">Cách xem</a></li>
+          <li><a th:href="@{#}">Chỉ có tại NEW MOVIE</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-6 mb-4">
+        <h5>PHÁP LÝ</h5>
+        <ul class="footer-links">
+          <li><a th:href="@{#}">Điều khoản sử dụng</a></li>
+          <li><a th:href="@{#}">Chính sách bảo mật</a></li>
+          <li><a th:href="@{#}">Cookie</a></li>
+          <li><a th:href="@{#}">Thông tin doanh nghiệp</a></li>
+          <li><a th:href="@{#}">Thông báo pháp lý</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3 col-md-4 col-6 mb-4">
+        <h5>HỖ TRỢ</h5>
+        <ul class="footer-links">
+          <li><a th:href="@{#}">FAQ</a></li>
+          <li><a th:href="@{#}">Kiểm tra tốc độ</a></li>
+          <li><a th:href="@{#}">Liên hệ</a></li>
+          <li><a th:href="@{#}">Trung tâm đa phương tiện</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:src="@{/assets/js/auth.js}"></script>
+</body>
+</html>

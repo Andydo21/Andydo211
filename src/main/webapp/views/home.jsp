@@ -1,0 +1,251 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+  <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+    <!DOCTYPE html>
+    <html lang="vi">
+
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Phim Spider Man</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+      <link rel="stylesheet" href="../../assets/css/reset.css" />
+      <link rel="stylesheet" href="../../assets/css/base.css" />
+      <link rel="stylesheet" href="../../assets/css/styles.css" />
+    </head>
+    <body>
+      <!-- Header/Navbar -->
+      <header class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid px-5">
+          <a class="navbar-brand fw-bold text-warning" href="${pageContext.request.contextPath}/home">
+            NEW <span class="text-white">MOVIE</span>
+          </a>
+
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav main-nav">
+              <li class="nav-item">
+                <a class="nav-link active" href="${pageContext.request.contextPath}/home">Trang chủ</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="${pageContext.request.contextPath}/movie">Phim</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Thể Loại</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="${pageContext.request.contextPath}/mylist">Danh sách của tôi</a>
+              </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fas fa-search"></i></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+              </li>
+              <li class="nav-item">
+                <div id="user-info">
+                  <a class="nav-link" href="${pageContext.request.contextPath}/login"><i class="fas fa-user"></i></a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <!-- Movie Banner Section -->
+      <section class="movie-banner">
+        <div class="movie-slider">
+          <c:forEach var="movie" items="${bannerMovies}" varStatus="loop">
+            <div class="movie-content ${loop.first ? 'active' : ''}"
+              style="background-image: url('${movie.backgroundImage}')">
+              <h1>${movie.title}</h1>
+              <div class="movie-meta">
+                <span class="year">${movie.year}</span>
+                <span class="duration">${movie.duration}</span>
+                <span class="badge">${movie.category} ${movie.imdbRating} IMDb</span>
+              </div>
+              <p>${movie.description}</p>
+              <div class="movie-buttons">
+                <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="btn btn-light btn-play">
+                  <i class="fas fa-play"></i>Xem ngay
+                </a>
+                <button class="btn btn-secondary btn-trailer">
+                  <i class="fas fa-info-circle"></i>Xem chi tiết
+                </button>
+              </div>
+            </div>
+          </c:forEach>
+        </div>
+
+        <div class="movie-dots">
+          <c:forEach items="${bannerMovies}" var="movie" varStatus="loop">
+            <span class="dot ${loop.first ? 'active' : ''}"></span>
+          </c:forEach>
+        </div>
+      </section>
+
+      <!-- Movie Sections -->
+      <section class="movie-poster-slider">
+        <h2>THỊNH HÀNH</h2>
+        <div class="container-fluid">
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <c:forEach var="movie" items="${trendingMovies}">
+                <div class="swiper-slide">
+                  <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="text-decoration-none">
+                    <div class="movie-poster">
+                      <div class="top-badge">TOP 10</div>
+                      <img src="${movie.imageUrl}" alt="${movie.title}" />
+                      <div class="episode-badge">TẬP MỚI</div>
+                      <div class="update-badge">MỖI TUẦN</div>
+                    </div>
+                  </a>
+                </div>
+              </c:forEach>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="movie-poster-slider">
+        <h2>PHIM MỚI</h2>
+        <div class="container-fluid">
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <c:forEach var="movie" items="${newestMovies}">
+                <div class="swiper-slide">
+                  <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="text-decoration-none">
+                    <div class="movie-poster">
+                      <img src="${movie.imageUrl}" alt="${movie.title}" />
+                    </div>
+                  </a>
+                </div>
+              </c:forEach>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="movie-poster-slider">
+        <h2>PHIM BỘ HÀN QUỐC</h2>
+        <div class="container-fluid">
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <c:forEach var="movie" items="${koreanSeries}">
+                <div class="swiper-slide">
+                  <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="text-decoration-none">
+                    <div class="movie-poster">
+                      <img src="${movie.imageUrl}" alt="${movie.title}" />
+                    </div>
+                  </a>
+                </div>
+              </c:forEach>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="movie-poster-slider">
+        <h2>PHIM BỘ TRUNG QUỐC</h2>
+        <div class="container-fluid">
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <c:forEach var="movie" items="${chineseSeries}">
+                <div class="swiper-slide">
+                  <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="text-decoration-none">
+                    <div class="movie-poster">
+                      <img src="${movie.imageUrl}" alt="${movie.title}" />
+                    </div>
+                  </a>
+                </div>
+              </c:forEach>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="movie-poster-slider">
+        <h2>PHIM ÂU MỸ</h2>
+        <div class="container-fluid">
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <c:forEach var="movie" items="${westerSeries}">
+                <div class="swiper-slide">
+                  <a href="${pageContext.request.contextPath}/movie/detail/${movie.id}" class="text-decoration-none">
+                    <div class="movie-poster">
+                      <img src="${movie.imageUrl}" alt="${movie.title}" />
+                    </div>
+                  </a>
+                </div>
+              </c:forEach>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-3 col-md-12 mb-4">
+              <a class="footer-brand" href="${pageContext.request.contextPath}/home"> NEW <span>MOVIE</span> </a>
+              <p class="location">
+                <i class="fas fa-map-marker-alt"></i>
+                Movie Web Việt Nam
+              </p>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+              <h5>KHÁM PHÁ</h5>
+              <ul class="footer-links">
+                <li><a href="#">Trung tâm hỗ trợ</a></li>
+                <li><a href="#">Tài khoản</a></li>
+                <li><a href="#">Cách xem</a></li>
+                <li><a href="#">Chỉ có tại NEW MOVIE</a></li>
+              </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+              <h5>PHÁP LÝ</h5>
+              <ul class="footer-links">
+                <li><a href="#">Điều khoản sử dụng</a></li>
+                <li><a href="#">Chính sách bảo mật</a></li>
+                <li><a href="#">Cookie</a></li>
+                <li><a href="#">Thông tin doanh nghiệp</a></li>
+                <li><a href="#">Thông báo pháp lý</a></li>
+              </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+              <h5>HỖ TRỢ</h5>
+              <ul class="footer-links">
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Kiểm tra tốc độ</a></li>
+                <li><a href="#">Liên hệ</a></li>
+                <li><a href="#">Trung tâm đa phương tiện</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+      <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+    </body>
+
+    </html>

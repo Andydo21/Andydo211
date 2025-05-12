@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kết quả tìm kiếm - NEW MOVIE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/assets/css/reset.css}" />
+    <link rel="stylesheet" th:href="@{/assets/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/assets/css/movie.css}" />
+</head>
+<body>
+<!-- Header/Navbar -->
+<header class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid px-5">
+        <a class="navbar-brand fw-bold text-warning" th:href="@{/home}">
+            NEW <span class="text-white">MOVIE</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav main-nav">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/home}">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/movies}">Phim</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/categories}">Thể Loại</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/mylist}">Danh sách của tôi</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <form th:action="@{/user/search}" method="get" class="d-flex align-items-center">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm..." th:value="${keyword}" />
+                        <button type="submit" class="nav-link bg-transparent border-0"><i class="fas fa-search"></i></button>
+                    </form>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/notifications}"><i class="fas fa-bell"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-user"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- Search Results Section -->
+<br>
+<br>
+<br>
+<section class="movie-list">
+    <h2 th:if="${keyword != null and not #strings.isEmpty(keyword)}">Kết quả tìm kiếm cho: <span th:text="${keyword}"></span></h2>
+    <h2 th:if="${keyword == null or #strings.isEmpty(keyword)}">Kết quả tìm kiếm</h2>
+
+    <div th:if="${movies == null or #lists.isEmpty(movies)}" class="alert alert-info text-center">
+        <span th:text="${message != null ? message : 'Không tìm thấy phim phù hợp với từ khóa ' + keyword + '.'}"></span>
+    </div>
+    <div th:if="${movies != null and not #lists.isEmpty(movies)}" class="movie-grid">
+        <div th:each="movie : ${movies}" class="movie-card">
+            <a th:href="@{/movie/preshow/{id}(id=${movie.id})}" class="text-decoration-none">
+                <div class="movie-poster">
+                    <img th:src="${movie.imageUrl}" th:alt="${movie.productName}" />
+                    <div class="movie-overlay">
+                        <div class="movie-info">
+                            <h3 class="movie-title" th:text="${movie.productName}"></h3>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${movies == null or #lists.isEmpty(movies)}" class="alert alert-info text-center">
+        Không tìm thấy phim phù hợp với từ khóa "<span th:text="${keyword}"></span>".
+    </div>
+
+    <!-- Phân trang -->
+    <div class="pagination-container mt-4" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link" th:href="@{/Search(keyword=${keyword}, page=${currentPage - 1})}">Trước</a>
+            </li>
+            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}" th:classappend="${pageNumber == currentPage} ? 'active'">
+                <a class="page-link" th:href="@{/Search(keyword=${keyword}, page=${pageNumber})}" th:text="${pageNumber}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link" th:href="@{/Search(keyword=${keyword}, page=${currentPage + 1})}">Sau</a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-12 mb-4">
+                <a class="footer-brand" th:href="@{/home}"> NEW <span>MOVIE</span> </a>
+                <p class="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Movie Web Việt Nam
+                </p>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>KHÁM PHÁ</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{#}">Trung tâm hỗ trợ</a></li>
+                    <li><a th:href="@{#}">Tài khoản</a></li>
+                    <li><a th:href="@{#}">Cách xem</a></li>
+                    <li><a th:href="@{#}">Chỉ có tại NEW MOVIE</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>PHÁP LÝ</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{#}">Điều khoản sử dụng</a></li>
+                    <li><a th:href="@{#}">Chính sách bảo mật</a></li>
+                    <li><a th:href="@{#}">Cookie</a></li>
+                    <li><a th:href="@{#}">Thông tin doanh nghiệp</a></li>
+                    <li><a th:href="@{#}">Thông báo pháp lý</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>HỖ TRỢ</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{#}">FAQ</a></li>
+                    <li><a th:href="@{#}">Kiểm tra tốc độ</a></li>
+                    <li><a th:href="@{#}">Liên hệ</a></li>
+                    <li><a th:href="@{#}">Trung tâm đa phương tiện</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:src="@{/assets/js/auth.js}"></script>
+</body>
+</html>

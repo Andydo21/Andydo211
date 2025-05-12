@@ -1,0 +1,156 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex; /* Loại bỏ -webkit-flex */
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../images/auth-bg.jpg') no-repeat center center;
+  background-size: cover; /* Loại bỏ -webkit-background-size */
+}
+
+.auth-container {
+  display: flex; /* Loại bỏ -webkit-flex */
+  width: 100%;
+  align-items: center; /* Loại bỏ -webkit-align-items */
+  justify-content: flex-end; /* Loại bỏ -webkit-justify-content */
+}
+
+.auth-form {
+  background: rgba(32, 32, 32, 0.9);
+  padding: 40px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin-right: 10%;
+}
+
+.auth-form h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease; /* Loại bỏ -webkit-transition */
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #ffc107;
+  background: rgba(255,255,255,0.15);
+}
+
+.form-check {
+  display: flex; /* Loại bỏ -webkit-flex */
+  align-items: center; /* Loại bỏ -webkit-align-items */
+  justify-content: space-between; /* Loại bỏ -webkit-justify-content */
+  margin: 20px 0;
+}
+
+.form-check label {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+}
+
+.form-check a {
+  color: #ffc107;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease; /* Loại bỏ -webkit-transition */
+}
+
+.form-check a:hover {
+  color: #ffca2c;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background: #E50914;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Loại bỏ -webkit-transition */
+}
+
+.btn-submit:hover {
+  background: #f6121d;
+  transform: translateY(-1px); /* Loại bỏ -webkit-transform */
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 25px;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+}
+
+.auth-footer a {
+  color: #ffc107;
+  text-decoration: none;
+  margin-left: 5px;
+  transition: color 0.3s ease; /* Loại bỏ -webkit-transition */
+}
+
+.auth-footer a:hover {
+  color: #ffca2c;
+}
+
+/* Modal Auth Form */
+.modal-content.auth-form {
+  background: #2b2b2b;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  padding: 24px 32px;
+}
+
+.modal-header {
+  border: none;
+  padding: 0 0 24px 0;
+}
+
+.modal-header h1 {
+  font-size: 32px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.modal-header .btn-close {
+  background: none;
+  opacity: 0.7;
+  padding: 0;
+}
+
+.modal-body {
+  padding: 0;
+}
+
+/* Modal Animation */
+.modal.fade .modal-dialog {
+  transform: translateY(-20px); /* Loại bỏ -webkit-transform */
+  transition: transform 0.3s ease; /* Loại bỏ -webkit-transition */
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0); /* Loại bỏ -webkit-transform */
+}

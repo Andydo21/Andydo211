@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.productName} + ' - NEW MOVIE'">Movie Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet"/>
+    <link th:href="@{/assets/css/styles.css}" rel="stylesheet"/>
+
+    <style>
+        /* Dark theme */
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        header.navbar {
+            background-color: #111111;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand, .nav-link {
+            color: #ffffff !important;
+        }
+        .navbar-brand .text-white, .nav-link:hover {
+            color: #ffc107 !important;
+        }
+        .video-player-container {
+            padding: 20px 0;
+            background-color: #222222;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .movie-info {
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .movie-poster-slider {
+            padding: 20px 0;
+            background-color: #1a1a1a;
+        }
+        .swiper-slide {
+            text-align: center;
+        }
+        .movie-poster img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+        .movie-poster:hover img {
+            transform: scale(1.05);
+        }
+        .episode-badge, .update-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ffc107;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .update-badge {
+            top: auto;
+            bottom: 10px;
+            left: 10px;
+            background-color: #28a745;
+            color: #fff;
+        }
+        .chat-section {
+            padding: 40px 0;
+        }
+        .chat-messages {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .comment-form-container {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .footer {
+            background-color: #111111;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        .footer a {
+            color: #bbbbbb;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: #ffffff;
+        }
+        .error-message, .success-message {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- Header/Navbar -->
+<header class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid px-5">
+        <a class="navbar-brand fw-bold" th:href="@{user/home}">
+            NEW <span class="text-white">MOVIE</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/user/home}">Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/user/movie}">Phim</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/categories}">Thể Loại</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/user/movielist}">Danh sách của tôi</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i class="fas fa-search"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#notificationOffcanvas"><i class="fas fa-bell"></i></a>
+                </li>
+                <li class="nav-item">
+                    <div id="user-info">
+                        <a class="nav-link" th:href="@{/user/login}" th:if="${loggedInUser == null}">
+                            <i class="fas fa-user"></i> Đăng nhập
+                        </a>
+                        <a class="nav-link" th:href="@{/user/profile}" th:if="${loggedInUser != null}" th:text="'Xin chào, ' + ${loggedInUser.username}">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- Video Player Section -->
+<main class="pt-5">
+    <div class="container-fluid">
+        <div class="video-player-container">
+            <div th:if="${videoUrls != null and not videoUrls.isEmpty()}">
+                <div th:each="videoUrl, iterStat : ${videoUrls}" class="mb-4">
+                    <h4 class="text-center mb-2" th:text="'Phần ' + ${iterStat.index + 1}"></h4>
+                    <video controls width="100%">
+                        <source th:src="${videoUrl}" type="video/mp4">
+                        Trình duyệt của bạn không hỗ trợ video HTML5.
+                    </video>
+                </div>
+            </div>
+            <div th:if="${videoUrls == null or videoUrls.isEmpty()}">
+                <p class="text-center text-warning">Hiện không có video để hiển thị</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Movie Intro -->
+<div class="container-fluid">
+    <div class="movie-info">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="fw-bold mb-3" th:text="${product.productName}">Movie Title</h4>
+                <div class="d-flex align-items-center mb-2">
+                    <span class="me-3" th:text="${product.viewCount != null ? product.viewCount + ' lượt xem' : '0 lượt xem'}"></span>
+                </div>
+                <div class="mb-2">
+                    <span th:text="${product.released != null ? product.released : 'N/A'}"></span> |
+                    <span th:text="${product.country.countryName != null ? product.country : 'N/A'}"></span> |
+                    <span th:text="${product.episode != null ? product.episode : 'N/A'}"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-end mb-3">
+                    <span class="me-3" th:text="${product.likes != null ? product.likes : '0'} + ' lượt thích'"></span>
+                    <a href="#chatSection" class="text-warning text-decoration-none me-3">Bình luận 💬</a>
+                    <button class="btn btn-outline-warning btn-sm" onclick="copyShareLink()">Chia sẻ</button>
+                </div>
+                <div><strong>Diễn viên:</strong> <span th:text="${product.actor != null ? product.actor : 'Chưa có thông tin'}"></span></div>
+                <div><strong>Đạo diễn:</strong> <span th:text="${product.director != null ? product.director : 'Chưa có thông tin'}"></span></div>
+                <div><strong>Thể loại:</strong> <span th:text="${product.category != null ? product.category.categoryName : 'Chưa có thông tin'}"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Episode -->
+<section class="movie-poster-slider">
+    <h2 class="text-center mb-4">DANH SÁCH TẬP PHIM</h2>
+    <div class="container-fluid">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div th:each="episode : ${episodes}" class="swiper-slide">
+                    <div class="movie-poster position-relative">
+                        <img th:src="${episode.imageUrl != null ? episode.imageUrl : '/Uploads/default.png'}" th:alt="${episode.title}" class="img-fluid"/>
+                        <div class="episode-badge" th:text="${episode.title != null ? episode.title : 'Tập không có tiêu đề'}"></div>
+                        <div class="update-badge" th:text="${episode.duration != null ? episode.duration : 'N/A'}"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Đề xuất -->
+<section class="movie-poster-slider">
+    <h2 class="text-center mb-4">ĐỀ XUẤT CHO BẠN</h2>
+    <div class="container-fluid">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <div th:each="suggested : ${suggestedMovies}" class="swiper-slide">
+                    <div class="movie-poster position-relative">
+                        <a th:href="@{/movie/preshow/{id}(id=${suggested.id})}" class="text-decoration-none">
+                            <img th:src="${suggested.imageUrl}" th:alt="${suggested.productName}" class="img-fluid"/>
+                            <div class="update-badge" th:text="${suggested.duration != null ? suggested.duration : 'N/A'}"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Chat Section -->
+<section id="chatSection" class="chat-section">
+    <div class="container-fluid px-5">
+        <h2 class="text-center mb-4">Bình luận</h2>
+        <div id="chat-messages" class="chat-messages mb-5" style="max-height: 600px; overflow-y: auto;">
+            <div th:each="comment : ${comments}" class="d-flex gap-3 mb-4" th:id="'comment-' + ${comment.id}">
+                <img th:src="'/Uploads/default.png'" class="rounded-circle" width="50" height="50"/>
+                <div class="w-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0" th:text="${comment.user != null ? comment.user.username : 'Người dùng ẩn danh'}"></h5>
+                            <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'dd/MM/yyyy HH:mm')}"></small>
+                        </div>
+                        <div th:if="${loggedInUser != null and comment.user != null and comment.user.id == loggedInUser.id}">
+                            <button class="btn btn-sm btn-danger delete-comment-btn" th:data-comment-id="${comment.id}">Xóa</button>
+                        </div>
+                    </div>
+                    <p class="mt-2" th:text="${comment.content != null ? comment.content : 'Không có nội dung'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="comment-form-container" th:if="${loggedInUser != null}">
+            <h3 class="mb-3">Thêm bình luận mới</h3>
+            <div id="comment-error" class="error-message alert alert-danger"></div>
+            <div id="comment-success" class="success-message alert alert-success"></div>
+            <form id="comment-form" method="post">
+                <input type="hidden" name="product.id" th:value="${product.id}"/>
+                <div class="mb-3">
+                    <label for="content" class="form-label">Nội dung bình luận:</label>
+                    <textarea id="content" name="content" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+            </form>
+        </div>
+        <div th:if="${loggedInUser == null}" class="text-center">
+            <p>Vui lòng <a th:href="@{/user/login}" class="text-warning">đăng nhập</a> để bình luận.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-12 mb-4">
+                <a class="footer-brand" th:href="@{/home}">NEW <span>MOVIE</span></a>
+                <p class="mt-2"><i class="fas fa-map-marker-alt"></i> Movie Web Việt Nam</p>
+            </div>
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>KHÁM PHÁ</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Trung tâm hỗ trợ</a></li>
+                    <li><a href="#">Tài khoản</a></li>
+                    <li><a href="#">Cách xem</a></li>
+                    <li><a href="#">Chỉ có tại NEW MOVIE</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>PHÁP LÝ</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">Điều khoản sử dụng</a></li>
+                    <li><a href="#">Chính sách bảo mật</a></li>
+                    <li><a href="#">Cookie</a></li>
+                    <li><a href="#">Thông tin doanh nghiệp</a></li>
+                    <li><a href="#">Thông báo pháp lý</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4 col-6 mb-4">
+                <h5>HỖ TRỢ</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Kiểm tra tốc độ</a></li>
+                    <li><a href="#">Liên hệ</a></li>
+                    <li><a href="#">Trung tâm đa phương tiện</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script>
+    // Initialize Swiper
+    var swiper = new Swiper('.mySwiper', {
+        slidesPerView: 4,
+        spaceBetween: 20,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+            320: { slidesPerView: 1 },
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
+        }
+    });
+
+    // Share Link
+    function copyShareLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Đã sao chép liên kết!");
+        }).catch(err => {
+            console.error("Lỗi khi sao chép liên kết:", err);
+        });
+    }
+
+    // Comment Form AJAX
+    $(document).ready(function() {
+        $('#comment-form').on('submit', function(event) {
+            event.preventDefault(); // Ngăn submit form mặc định gây tải lại trang
+            console.log("Submitting comment form...");
+
+            var formData = {
+                content: $('#content').val(),
+                product: { id: $('input[name="product.id"]').val() }
+            };
+            console.log("Form data:", formData);
+
+            $.ajax({
+                type: 'POST',
+                url: '/user/comment',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    console.log("Response from server:", response);
+                    if (response.success) {
+                        // Xử lý createdAt từ chuỗi ISO 8601
+                        var createdAt;
+                        try {
+                            createdAt = new Date(response.comment.createdAt).toLocaleString('vi-VN', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        } catch (e) {
+                            console.error("Error parsing createdAt:", e);
+                            createdAt = "Vừa xong"; // Dự phòng nếu parsing thất bại
+                        }
+
+                        var newComment = `
+                            <div class="d-flex gap-3 mb-4" id="comment-${response.comment.id}">
+                                <img src="/Uploads/default.png" class="rounded-circle" width="50" height="50"/>
+                                <div class="w-100">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-0">${response.comment.username || 'Người dùng ẩn danh'}</h5>
+                                            <small class="text-muted">${createdAt}</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger delete-comment-btn" data-comment-id="${response.comment.id}">Xóa</button>
+                                    </div>
+                                    <p class="mt-2">${response.comment.content || 'Không có nội dung'}</p>
+                                </div>
+                            </div>`;
+                        console.log("Adding new comment to DOM...");
+                        $('#chat-messages').prepend(newComment);
+                        $('#content').val('');
+                        $('#comment-error').hide();
+                        $('#comment-success').text(response.message).show().delay(3000).fadeOut();
+                    } else {
+                        $('#comment-success').hide();
+                        $('#comment-error').text(response.message).show().delay(3000).fadeOut();
+                    }
+                },
+                error: function(xhr) {
+                    console.log("Error response:", xhr);
+                    $('#comment-success').hide();
+                    var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Lỗi không xác định';
+                    $('#comment-error').text('Lỗi khi gửi bình luận: ' + errorMessage).show().delay(3000).fadeOut();
+                }
+            });
+        });
+
+        $(document).on('click', '.delete-comment-btn', function() {
+            var commentId = $(this).data('comment-id');
+            if (confirm('Bạn có chắc chắn muốn xóa bình luận này?')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/user/deleteComment/' + commentId,
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#comment-' + response.commentId).remove();
+                            $('#comment-error').hide();
+                            $('#comment-success').text(response.message).show().delay(3000).fadeOut();
+                        } else {
+                            $('#comment-success').hide();
+                            $('#comment-error').text(response.message).show().delay(3000).fadeOut();
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#comment-success').hide();
+                        var errorMessage = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Lỗi không xác định';
+                        $('#comment-error').text('Lỗi khi xóa bình luận: ' + errorMessage).show().delay(3000).fadeOut();
+                    }
+                });
+            }
+        });
+    });
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93bd1978785d673d',t:'MTc0NjU4Mjk3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
