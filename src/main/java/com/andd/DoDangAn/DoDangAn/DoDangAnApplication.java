@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DoDangAnApplication {
 
 	public static void main(String[] args) {
+		// Launch Spring Boot application
 		SpringApplication.run(DoDangAnApplication.class, args);
 	}
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+import java.util.Set;
 
 @Entity
 @Table(name="Categories")
@@ -14,6 +16,9 @@ public class Category {
     @Column(name="categoryName")
     private String categoryName;
     private String description;
+
+    @OneToMany(mappedBy = "category")
+    private Set<Product> products;
 
     public Category() {}
 
@@ -45,5 +50,13 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }
